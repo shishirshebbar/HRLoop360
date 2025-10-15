@@ -6,16 +6,20 @@ import ManagerDashboard from "./pages/ManagerDashboard";
 import HRDashboard from "./pages/HRDashboard";
 import EmployeeDashboard from "./pages/EmployeeDashboard";
 import ProtectedRoute from "./components/ProtectedRoute";
+import AIPerformance from "./pages/ai/AIPerformance";
+import AIOffer from "./pages/ai/AIOffer";
+import AISkills from "./pages/ai/AISkills";
+import AISatisfaction from "./pages/ai/AISatisfaction";
 
 function App() {
   return (
     <BrowserRouter>
       <Routes>
-        {/* Public Routes */}
+        {/* Public */}
         <Route path="/" element={<Login />} />
         <Route path="/register" element={<Register />} />
 
-        {/* Protected Routes */}
+        {/* Protected (one-by-one) */}
         <Route
           path="/admin"
           element={
@@ -45,6 +49,40 @@ function App() {
           element={
             <ProtectedRoute allowedRoles={["Employee"]}>
               <EmployeeDashboard />
+            </ProtectedRoute>
+          }
+        />
+
+        {/* AI Tools - HR Only */}
+        <Route
+          path="/ai/performance"
+          element={
+            <ProtectedRoute allowedRoles={["HR Recruiter"]}>
+              <AIPerformance />
+            </ProtectedRoute>
+          }
+        />
+        <Route
+          path="/ai/offer"
+          element={
+            <ProtectedRoute allowedRoles={["HR Recruiter"]}>
+              <AIOffer />
+            </ProtectedRoute>
+          }
+        />
+        <Route
+          path="/ai/skills"
+          element={
+            <ProtectedRoute allowedRoles={["HR Recruiter"]}>
+              <AISkills />
+            </ProtectedRoute>
+          }
+        />
+        <Route
+          path="/ai/satisfaction"
+          element={
+            <ProtectedRoute allowedRoles={["HR Recruiter"]}>
+              <AISatisfaction />
             </ProtectedRoute>
           }
         />
