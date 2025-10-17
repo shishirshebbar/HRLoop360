@@ -18,7 +18,21 @@ export async function apiPost(path, body) {
   }
   return res.json();
 }
-
+export async function apiPostForm(path, formData) {
+  const token = localStorage.getItem("token");
+  const res = await fetch(`${BASE_URL}${path}`, {
+    method: "POST",
+    headers: {
+      ...(token ? { Authorization: `Bearer ${token}` } : {})
+    },
+    body: formData
+  });
+  if (!res.ok) {
+    const msg = await safeJson(res);
+    throw new Error(msg?.error || msg?.message || `Request failed: ${res.status}`);
+  }
+  return res.json();
+}
 async function safeJson(res) {
   try { return await res.json(); } catch { return null; }
 }

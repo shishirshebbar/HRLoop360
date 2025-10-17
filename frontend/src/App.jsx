@@ -10,6 +10,7 @@ import AIPerformance from "./pages/ai/AIPerformance";
 import AIOffer from "./pages/ai/AIOffer";
 import AISkills from "./pages/ai/AISkills";
 import AISatisfaction from "./pages/ai/AISatisfaction";
+import AIResumeScreener from "./pages/ai/AIResumeScreener";
 
 function App() {
   return (
@@ -83,6 +84,14 @@ function App() {
           element={
             <ProtectedRoute allowedRoles={["HR Recruiter"]}>
               <AISatisfaction />
+            </ProtectedRoute>
+          }
+        />
+        <Route
+          path="/ai/resume-screener"
+          element={
+            <ProtectedRoute allowedRoles={["HR Recruiter"]}>
+              <AIResumeScreener />
             </ProtectedRoute>
           }
         />

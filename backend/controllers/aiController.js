@@ -1,5 +1,5 @@
 
-
+const { screenBatch } = require("../services/ai/resume.service");
 const { scoreAndExplain: perfScore } = require("../services/ai/performance.service");
 const { scoreAndExplain: offerScore } = require("../services/ai/offer.service");
 const { analyzeSkills } = require("../services/ai/skills.service");
@@ -57,9 +57,27 @@ async function satisfaction(req, res, next) {
   } catch (e) { next(e); }
 }
 
+async function resumeScreen(req, res, next) {
+  try {
+    const jdText = req.body?.jdText || "";
+    const title = req.body?.title || "Untitled Job";
+    const files = (req.files || []).map(f => ({ buffer: f.buffer, originalname: f.originalname, mimetype: f.mimetype }));
+    if (!jdText.trim()) {
+      const err = new Error("Missing field: jdText");
+      err.status = 400; throw err;
+    }
+    if (!files.length) {
+      const err = new Error("At least one resume file is required");
+      err.status = 400; throw err;
+    }
+    const data = await screenBatch({ jdText, title, files });
+    res.json({ ok: true, data });
+  } catch (e) { next(e); }
+}
 module.exports = {
   performance,
   offer,
   skills,
   satisfaction,
+  resumeScreen
 };

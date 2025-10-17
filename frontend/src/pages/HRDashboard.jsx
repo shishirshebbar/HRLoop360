@@ -217,6 +217,11 @@ export default function HRDashboard() {
             description="Pulse survey blend, team score, heatmap, actions."
             to="/ai/satisfaction"
           />
+          <FeatureCard
+            title="AI Resume Screener"
+            description="Upload resumes, get fit scores, explanations, and shortlist."
+            to="/ai/resume-screener"
+          />
         </div>
       </section>
     </div>

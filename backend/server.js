@@ -10,13 +10,13 @@ dotenv.config();
 const app = express();
 app.use(cors());
 app.use(express.json());
-
+console.log("DEBUG FLAG:", process.env.AI_DEBUG);
 // Routes
 app.use("/api/auth", authRoutes);
 app.use("/api/admin", adminRoutes);
 app.use("/api/ai",   aiRoutes);
 app.use("/api/users",userRoutes)
-
+console.log(process.env.GEMINI_API_KEY);
 mongoose
   .connect(process.env.MONGO_URI)
   .then(() => console.log("✅ MongoDB Connected"))
