@@ -203,63 +203,72 @@ export default function AISatisfaction() {
                     </button>
                   </div>
 
-                  <div className="grid grid-cols-1 md:grid-cols-6 gap-3">
+                  <div className="grid grid-cols-1 md:grid-cols-12 gap-3">
+
                     <Input
-                      label="Employee ID"
-                      value={s.employeeId}
-                      onChange={(v) =>
-                        setSurvey(i, (prev) => ({ ...prev, employeeId: v }))
-                      }
-                    />
+  label="Employee ID"
+  value={s.employeeId}
+  onChange={(v) => setSurvey(i, (prev) => ({ ...prev, employeeId: v }))}
+  // Employee ID wider so it doesn’t collide
+  className="md:col-span-3"
+/>
 
-                    <Slider1to5
-                      label="Workload"
-                      value={s.items.workload}
-                      onChange={(v) =>
-                        setSurvey(i, (prev) => ({
-                          ...prev,
-                          items: { ...prev.items, workload: v },
-                        }))
-                      }
-                    />
-                    <Slider1to5
-                      label="Recognition"
-                      value={s.items.recognition}
-                      onChange={(v) =>
-                        setSurvey(i, (prev) => ({
-                          ...prev,
-                          items: { ...prev.items, recognition: v },
-                        }))
-                      }
-                    />
-                    <Slider1to5
-                      label="Growth"
-                      value={s.items.growth}
-                      onChange={(v) =>
-                        setSurvey(i, (prev) => ({
-                          ...prev,
-                          items: { ...prev.items, growth: v },
-                        }))
-                      }
-                    />
-                    <Slider1to5
-                      label="Manager Support"
-                      value={s.items.managerSupport}
-                      onChange={(v) =>
-                        setSurvey(i, (prev) => ({
-                          ...prev,
-                          items: { ...prev.items, managerSupport: v },
-                        }))
-                      }
-                    />
+<Slider1to5
+  label="Workload"
+  value={s.items.workload}
+  onChange={(v) =>
+    setSurvey(i, (prev) => ({
+      ...prev,
+      items: { ...prev.items, workload: v },
+    }))
+  }
+  className="md:col-span-2"
+/>
 
-                    <Textarea
-                      label="Comment"
-                      value={s.comment}
-                      onChange={(v) =>
-                        setSurvey(i, (prev) => ({ ...prev, comment: v }))
-                      }
-                    />
+<Slider1to5
+  label="Recognition"
+  value={s.items.recognition}
+  onChange={(v) =>
+    setSurvey(i, (prev) => ({
+      ...prev,
+      items: { ...prev.items, recognition: v },
+    }))
+  }
+  className="md:col-span-2"
+/>
+
+<Slider1to5
+  label="Growth"
+  value={s.items.growth}
+  onChange={(v) =>
+    setSurvey(i, (prev) => ({
+      ...prev,
+      items: { ...prev.items, growth: v },
+    }))
+  }
+  className="md:col-span-2"
+/>
+
+<Slider1to5
+  label="Manager Support"
+  value={s.items.managerSupport}
+  onChange={(v) =>
+    setSurvey(i, (prev) => ({
+      ...prev,
+      items: { ...prev.items, managerSupport: v },
+    }))
+  }
+  className="md:col-span-3"
+/>
+
+<Textarea
+  label="Comment"
+  value={s.comment}
+  onChange={(v) => setSurvey(i, (prev) => ({ ...prev, comment: v }))}
+  // Let comments wrap below everything
+  className="md:col-span-12"
+/>
+
                   </div>
                 </motion.div>
               ))}
@@ -451,12 +460,12 @@ export default function AISatisfaction() {
    Presentational UI
    ----------------- */
 
-function Input({ label, value, onChange }) {
+function Input({ label, value, onChange, className = "" }) {
   return (
-    <label className="text-sm">
+    <label className={`text-sm ${className}`}>
       {label}
       <input
-        className="mt-1 w-full rounded-xl border px-3 py-2 focus:ring-2 focus:ring-indigo-400 focus:outline-none"
+        className="mt-1 w-full rounded-xl border px-3 py-2 focus:ring-2 focus:ring-indigo-400 focus:outline-none min-w-0"
         value={value}
         onChange={(e) => onChange(e.target.value)}
       />
@@ -464,13 +473,13 @@ function Input({ label, value, onChange }) {
   );
 }
 
-function Textarea({ label, value, onChange }) {
+function Textarea({ label, value, onChange, className = "" }) {
   return (
-    <label className="text-sm col-span-1 md:col-span-2">
+    <label className={`text-sm ${className}`}>
       {label}
       <textarea
         rows={2}
-        className="mt-1 w-full rounded-xl border px-3 py-2 focus:ring-2 focus:ring-indigo-400 focus:outline-none"
+        className="mt-1 w-full rounded-xl border px-3 py-2 focus:ring-2 focus:ring-indigo-400 focus:outline-none resize-y min-w-0"
         value={value}
         onChange={(e) => onChange(e.target.value)}
       />
@@ -478,25 +487,39 @@ function Textarea({ label, value, onChange }) {
   );
 }
 
-function Slider1to5({ label, value, onChange }) {
+
+function Slider1to5({ label, value, onChange, className = "" }) {
+  // Allow free-typing in the box; slider stays numeric inside [1..5].
+  const numeric = typeof value === "string" ? parseFloat(value) : Number(value);
+  const sliderValue = Number.isFinite ? (Number.isFinite(numeric) ? numeric : 3) : (isFinite(numeric) ? numeric : 3);
+
   return (
-    <label className="text-sm">
-      <div className="flex items-center justify-between">
-        <span>{label}</span>
-        <span className="text-xs text-gray-500">{value}</span>
+    <label className={`text-sm ${className}`}>
+      <div className="flex flex-col gap-1 sm:flex-row sm:items-center sm:justify-between">
+        <span className="min-w-0 truncate">{label}</span>
+        <input
+          type="text"
+          inputMode="numeric"
+          className="sm:ml-2 w-full sm:w-20 rounded-lg border px-2 py-1 text-right focus:ring-2 focus:ring-indigo-400 focus:outline-none"
+          value={value ?? ""}
+          onChange={(e) => onChange(e.target.value)}  // keep text exactly as typed
+          placeholder="1-5"
+        />
       </div>
+
       <input
         type="range"
         min={1}
         max={5}
         step={1}
-        value={value}
-        onChange={(e) => onChange(Number(e.target.value))}
+        value={Math.min(5, Math.max(1, sliderValue || 3))}
+        onChange={(e) => onChange(Number(e.target.value))} // slider sends number
         className="mt-2 w-full"
       />
     </label>
   );
 }
+
 
 function Progress({ value = 0 }) {
   const clamped = Math.max(0, Math.min(100, Number(value) || 0));

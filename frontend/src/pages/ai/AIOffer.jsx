@@ -122,14 +122,14 @@ export default function AIOffer() {
                 ]}
               />
 
-              <Number
+              <InputBox
                 icon={<Coins className="h-4 w-4" />}
                 label="Offered Base Salary"
                 prefix="$"
                 value={form.offeredBaseSalary}
                 onChange={(v) => set("offeredBaseSalary", v)}
               />
-              <Number
+              <InputBox
                 icon={<BarChart3 className="h-4 w-4" />}
                 label="Market Median Salary"
                 prefix="$"
@@ -137,14 +137,14 @@ export default function AIOffer() {
                 onChange={(v) => set("marketMedianSalary", v)}
               />
 
-              <Number
+              <InputBox
                 icon={<Building2 className="h-4 w-4" />}
                 label="Experience (years)"
                 value={form.experienceYears}
                 onChange={(v) => set("experienceYears", v)}
               />
 
-              <Slider
+              <SliderInput
                 label="Benefits Score"
                 help="Overall benefits competitiveness (0..1)"
                 min={0}
@@ -153,7 +153,7 @@ export default function AIOffer() {
                 value={form.benefitsScore}
                 onChange={(v) => set("benefitsScore", v)}
               />
-              <Slider
+              <SliderInput
                 label="Location Flexibility"
                 help="0 = on‑site, 1 = remote"
                 min={0}
@@ -162,13 +162,13 @@ export default function AIOffer() {
                 value={form.locationFlexibility}
                 onChange={(v) => set("locationFlexibility", v)}
               />
-              <Number
+              <InputBox
                 icon={<Clock className="h-4 w-4" />}
                 label="Offer Speed (days)"
                 value={form.offerSpeedDays}
                 onChange={(v) => set("offerSpeedDays", v)}
               />
-              <Slider
+              <SliderInput
                 label="Company Reputation"
                 help="External brand & reviews (0..1)"
                 min={0}
@@ -336,23 +336,24 @@ function Input({ label, value, onChange, icon }) {
   );
 }
 
-function Number({ label, value, onChange, icon, prefix }) {
+
+function InputBox({ label, value, onChange, icon }) {
   return (
     <label className="text-sm">
       {label}
       <div className="relative mt-1">
         {icon && <span className="absolute left-3 top-2.5 text-gray-400">{icon}</span>}
-        {prefix && <span className="absolute left-9 top-2.5 text-gray-500">{prefix}</span>}
         <input
-          type="number"
-          className={`w-full px-3 py-2 ${prefix ? "pl-14" : "pl-9"} rounded-xl border focus:ring-2 focus:ring-indigo-400 focus:outline-none`}
-          value={value}
-          onChange={(e) => onChange(Number(e.target.value))}
+          type="text"
+          className="w-full px-3 py-2 pl-9 rounded-xl border focus:ring-2 focus:ring-indigo-400 focus:outline-none"
+          value={value ?? ""}
+          onChange={(e) => onChange(e.target.value)}
         />
       </div>
     </label>
   );
 }
+
 
 function Select({ label, value, onChange, options }) {
   return (
@@ -372,28 +373,39 @@ function Select({ label, value, onChange, options }) {
     </label>
   );
 }
+function SliderInput({ label, help, min = 0, max = 1, step = 0.01, value, onChange }) {
+  // Accept both strings and numbers; show 0 on the slider when value is empty/invalid.
+  const numeric =
+    typeof value === "string" ? parseFloat(value) : Number(value);
+  const sliderValue = Number.isFinite(numeric) ? numeric : 0;
 
-function Slider({ label, help, min = 0, max = 1, step = 0.01, value, onChange }) {
   return (
     <label className="text-sm">
       <div className="flex items-center justify-between">
         <span>{label}</span>
-        <span className="text-xs text-gray-500">{value}</span>
+        <input
+          type="text"
+          inputMode="decimal"
+          className="ml-2 w-24 rounded-lg border px-2 py-1 text-right focus:ring-2 focus:ring-indigo-400 focus:outline-none"
+          value={value ?? ""}
+          onChange={(e) => onChange(e.target.value)} // keep what the user types
+          placeholder={`${min}..${max}`}
+        />
       </div>
       {help && <div className="text-xs text-gray-500">{help}</div>}
+
       <input
         type="range"
         min={min}
         max={max}
         step={step}
-        value={value}
-        onChange={(e) => onChange(Number(e.target.value))}
+        value={sliderValue}
+        onChange={(e) => onChange(Number(e.target.value))} // when sliding, send a number
         className="mt-2 w-full"
       />
     </label>
   );
 }
-
 function Progress({ value = 0 }) {
   return (
     <div className="mt-2 h-2 w-full rounded-full bg-gray-200">

@@ -134,7 +134,7 @@ function toScore100(raw) {
                 onChange={(v) => set("employeeId", v)}
               />
 
-              <Slider
+              <SliderInput
                 label="OKR Completion"
                 help="Completion ratio (0..1)"
                 min={0}
@@ -144,7 +144,7 @@ function toScore100(raw) {
                 onChange={(v) => set("okrCompletion", v)}
               />
 
-              <Slider
+              <SliderInput
                 label="Attendance Rate"
                 help="Consistency of presence (0..1)"
                 min={0}
@@ -154,14 +154,14 @@ function toScore100(raw) {
                 onChange={(v) => set("attendanceRate", v)}
               />
 
-              <Number
+              <InputBox
                 icon={<BarChart3 className="h-4 w-4" />}
                 label="Peer Feedback Count"
                 value={form.peerFeedbackCount}
                 onChange={(v) => set("peerFeedbackCount", v)}
               />
 
-              <Slider
+              <SliderInput
                 label="Peer Feedback Sentiment"
                 help="Average sentiment (-1..1)"
                 min={-1}
@@ -171,7 +171,7 @@ function toScore100(raw) {
                 onChange={(v) => set("peerFeedbackSentiment", v)}
               />
 
-              <Number
+              <InputBox
                 icon={<Gauge className="h-4 w-4" />}
                 label="Last Manager Rating (1..5)"
                 value={form.lastManagerRating}
@@ -179,7 +179,7 @@ function toScore100(raw) {
                 onChange={(v) => set("lastManagerRating", v)}
               />
 
-              <Number
+              <InputBox
                 icon={<Clock className="h-4 w-4" />}
                 label="Tenure (months)"
                 value={form.tenureMonths}
@@ -343,23 +343,26 @@ function Input({ label, value, onChange, icon }) {
   );
 }
 
-function Number({ label, value, onChange, icon, step = 1 }) {
+function InputBox({ label, value, onChange, icon }) {
   return (
     <label className="text-sm">
       {label}
       <div className="relative mt-1">
         {icon && <span className="absolute left-3 top-2.5 text-gray-400">{icon}</span>}
         <input
-          type="number"
-          step={step}
+          type="text"
           className="w-full px-3 py-2 pl-9 rounded-xl border focus:ring-2 focus:ring-indigo-400 focus:outline-none"
-          value={value}
-          onChange={(e) => onChange(Number(e.target.value))}
+          value={value ?? ""}
+          onChange={(e) => onChange(e.target.value)}
         />
       </div>
     </label>
   );
 }
+
+
+
+
 
 function Select({ label, value, onChange, options }) {
   return (
@@ -380,26 +383,40 @@ function Select({ label, value, onChange, options }) {
   );
 }
 
-function Slider({ label, help, min = 0, max = 1, step = 0.01, value, onChange }) {
+function SliderInput({ label, help, min = 0, max = 1, step = 0.01, value, onChange }) {
+  // Accept both strings and numbers; show 0 on the slider when value is empty/invalid.
+  const numeric =
+    typeof value === "string" ? parseFloat(value) : Number(value);
+  const sliderValue = Number.isFinite(numeric) ? numeric : 0;
+
   return (
     <label className="text-sm">
       <div className="flex items-center justify-between">
         <span>{label}</span>
-        <span className="text-xs text-gray-500">{value}</span>
+        <input
+          type="text"
+          inputMode="decimal"
+          className="ml-2 w-24 rounded-lg border px-2 py-1 text-right focus:ring-2 focus:ring-indigo-400 focus:outline-none"
+          value={value ?? ""}
+          onChange={(e) => onChange(e.target.value)} // keep what the user types
+          placeholder={`${min}..${max}`}
+        />
       </div>
       {help && <div className="text-xs text-gray-500">{help}</div>}
+
       <input
         type="range"
         min={min}
         max={max}
         step={step}
-        value={value}
-        onChange={(e) => onChange(Number(e.target.value))}
+        value={sliderValue}
+        onChange={(e) => onChange(Number(e.target.value))} // when sliding, send a number
         className="mt-2 w-full"
       />
     </label>
   );
 }
+
 
 function Progress({ value = 0 }) {
   const clamped = Math.max(0, Math.min(100, value));

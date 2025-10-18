@@ -119,7 +119,7 @@ export default function AISkills() {
             </div>
 
             <div className="mt-4 grid grid-cols-1 md:grid-cols-3 gap-4 items-end">
-              <Number
+              <InputBox
                 label="Top K (3..20)"
                 min={3}
                 max={20}
@@ -280,21 +280,24 @@ function Textarea({ label, value, onChange, rows = 8, icon }) {
   );
 }
 
-function Number({ label, value, onChange, min = 0, max = 100 }) {
+
+function InputBox({ label, value, onChange, icon }) {
   return (
     <label className="text-sm">
       {label}
-      <input
-        type="number"
-        min={min}
-        max={max}
-        className="mt-1 w-full rounded-xl border px-3 py-2 focus:ring-2 focus:ring-indigo-400 focus:outline-none"
-        value={value}
-        onChange={(e) => onChange(Number(e.target.value))}
-      />
+      <div className="relative mt-1">
+        {icon && <span className="absolute left-3 top-2.5 text-gray-400">{icon}</span>}
+        <input
+          type="text"
+          className="w-full px-3 py-2 pl-9 rounded-xl border focus:ring-2 focus:ring-indigo-400 focus:outline-none"
+          value={value ?? ""}
+          onChange={(e) => onChange(e.target.value)}
+        />
+      </div>
     </label>
   );
 }
+
 
 function KChip({ k, tone = "sky" }) {
   const t =
