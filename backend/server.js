@@ -2,20 +2,14 @@ import express from "express";
 import mongoose from "mongoose";
 import dotenv from "dotenv";
 import cors from "cors";
-<<<<<<< HEAD
 import cron from "node-cron";
 import runAttendanceJob from "./jobs/attendanceJob.js";
-=======
->>>>>>> 0aa482e365723ad9899daba81968225e82f6e432
 import authRoutes from "./routes/authRoutes.js";
 import adminRoutes from "./routes/adminRoutes.js";
 import aiRoutes from "./routes/aiRoutes.js";
 import userRoutes from "./routes/userRoutes.js";
-<<<<<<< HEAD
 import hrmsRoutes from "./routes/hrmsRoutes.js";
 
-=======
->>>>>>> 0aa482e365723ad9899daba81968225e82f6e432
 dotenv.config();
 const app = express();
 app.use(cors());
@@ -24,22 +18,16 @@ console.log("DEBUG FLAG:", process.env.AI_DEBUG);
 // Routes
 app.use("/api/auth", authRoutes);
 app.use("/api/admin", adminRoutes);
-<<<<<<< HEAD
 app.use("/api/ai", aiRoutes);
 app.use("/api/users", userRoutes);
 app.use("/api/hr", hrmsRoutes);
 
-=======
-app.use("/api/ai",   aiRoutes);
-app.use("/api/users",userRoutes)
->>>>>>> 0aa482e365723ad9899daba81968225e82f6e432
 console.log(process.env.GEMINI_API_KEY);
 mongoose
   .connect(process.env.MONGO_URI)
   .then(() => console.log("✅ MongoDB Connected"))
   .catch((err) => console.log("MongoDB Error:", err));
 
-<<<<<<< HEAD
 app.listen(process.env.PORT, () => {
   console.log(`🚀 Server running on ${process.env.PORT}`);
 
@@ -68,8 +56,3 @@ app.listen(process.env.PORT, () => {
   );
   // ==========================================================
 });
-=======
-app.listen(process.env.PORT, () =>
-  console.log(`🚀 Server running on ${process.env.PORT}`)
-);
->>>>>>> 0aa482e365723ad9899daba81968225e82f6e432

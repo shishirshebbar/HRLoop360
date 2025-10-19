@@ -20,10 +20,7 @@
     "mammoth": "^1.11.0",
     "mongoose": "^8.19.1",
     "multer": "^2.0.2",
-<<<<<<< HEAD
     "node-cron": "^4.2.1",
-=======
->>>>>>> 0aa482e365723ad9899daba81968225e82f6e432
     "pdf-parse": "^1.1.1"
   },
   "devDependencies": {
