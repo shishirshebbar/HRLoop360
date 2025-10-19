@@ -1,5 +1,6 @@
 import jwt from "jsonwebtoken";
 
+<<<<<<< HEAD
 // ====== AUTH PROTECTION MIDDLEWARE ======
 export const protect = (req, res, next) => {
   try {
@@ -15,17 +16,32 @@ export const protect = (req, res, next) => {
     next();
   } catch (err) {
     console.error("Auth Error:", err.message);
+=======
+export const protect = (req, res, next) => {
+  try {
+    const token = req.headers.authorization?.split(" ")[1];
+    if (!token) return res.status(401).json({ message: "No token provided" });
+
+    const decoded = jwt.verify(token, process.env.JWT_SECRET);
+    req.user = decoded;
+    next();
+  } catch {
+>>>>>>> 0aa482e365723ad9899daba81968225e82f6e432
     res.status(401).json({ message: "Invalid or expired token" });
   }
 };
 
+<<<<<<< HEAD
 // ====== ADMIN ONLY ======
+=======
+>>>>>>> 0aa482e365723ad9899daba81968225e82f6e432
 export const adminOnly = (req, res, next) => {
   if (req.user.role !== "Management Admin") {
     return res.status(403).json({ message: "Access denied: Admins only" });
   }
   next();
 };
+<<<<<<< HEAD
 
 // ====== GENERIC ROLE CHECKER ======
 export const allowRoles =
@@ -60,3 +76,11 @@ export const employeeOnly = (req, res, next) => {
   }
   next();
 };
+=======
+export const allowRoles = (...roles) => (req, res, next) => {
+  if (!roles.includes(req.user.role)) {
+    return res.status(403).json({ message: "Access denied: insufficient role" });
+  }
+  next();
+}
+>>>>>>> 0aa482e365723ad9899daba81968225e82f6e432

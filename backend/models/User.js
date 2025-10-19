@@ -9,6 +9,7 @@ const userSchema = new mongoose.Schema({
     enum: ["Management Admin", "Senior Manager", "HR Recruiter", "Employee"],
     default: "Employee",
   },
+<<<<<<< HEAD
   // --- NEW FIELD FOR MANAGER RELATIONSHIP ---
   manager: {
     type: mongoose.Schema.Types.ObjectId,
@@ -16,6 +17,8 @@ const userSchema = new mongoose.Schema({
     default: null, // Initially null for self-registered employees
   },
   // ------------------------------------------
+=======
+>>>>>>> 0aa482e365723ad9899daba81968225e82f6e432
 });
 
 export default mongoose.model("User", userSchema);

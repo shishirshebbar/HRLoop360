@@ -11,6 +11,7 @@ import AIOffer from "./pages/ai/AIOffer";
 import AISkills from "./pages/ai/AISkills";
 import AISatisfaction from "./pages/ai/AISatisfaction";
 import AIResumeScreener from "./pages/ai/AIResumeScreener";
+<<<<<<< HEAD
 import AdminAssignManager from "./pages/AdminAssignManager";
 import LeaveApprovalPage from "./pages/manager/LeaveApprovalPage";
 import TaskAllocationPage from "./pages/manager/TaskAllocationPage";
@@ -18,6 +19,8 @@ import AttendanceMonitoringPage from "./pages/manager/AttendanceMonitoringPage";
 import LeaveRequestPage from "./pages/employee/LeaveRequestPage";
 import TaskAllocatedPage from "./pages/employee/TaskAllocatedPage";
 import AttendancePage from "./pages/employee/AttendancePage";
+=======
+>>>>>>> 0aa482e365723ad9899daba81968225e82f6e432
 
 function App() {
   return (
@@ -37,6 +40,7 @@ function App() {
           }
         />
         <Route
+<<<<<<< HEAD
           path="/admin/assign-manager"
           element={
             <ProtectedRoute allowedRoles={["Management Admin"]}>
@@ -45,6 +49,8 @@ function App() {
           }
         />
         <Route
+=======
+>>>>>>> 0aa482e365723ad9899daba81968225e82f6e432
           path="/manager"
           element={
             <ProtectedRoute allowedRoles={["Senior Manager"]}>
@@ -53,6 +59,7 @@ function App() {
           }
         />
         <Route
+<<<<<<< HEAD
           path="/manager/leave-approval"
           element={
             <ProtectedRoute allowedRoles={["Senior Manager"]}>
@@ -77,6 +84,8 @@ function App() {
           }
         />
         <Route
+=======
+>>>>>>> 0aa482e365723ad9899daba81968225e82f6e432
           path="/hr"
           element={
             <ProtectedRoute allowedRoles={["HR Recruiter"]}>
@@ -92,6 +101,7 @@ function App() {
             </ProtectedRoute>
           }
         />
+<<<<<<< HEAD
         <Route
           path="/employee/leave-request"
           element={
@@ -117,6 +127,8 @@ function App() {
             </ProtectedRoute>
           }
         />
+=======
+>>>>>>> 0aa482e365723ad9899daba81968225e82f6e432
 
         {/* AI Tools - HR Only */}
         <Route

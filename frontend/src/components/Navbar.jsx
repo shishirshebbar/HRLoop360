@@ -15,9 +15,12 @@ import {
   BarChart3,
   Calendar,
   BadgeCheck,
+<<<<<<< HEAD
   CheckCircle, // New icon for approvals
   ListChecks, // New icon for task allocation
   Clock,
+=======
+>>>>>>> 0aa482e365723ad9899daba81968225e82f6e432
 } from "lucide-react";
 
 const glass =
@@ -30,15 +33,20 @@ const roleNav = (role) => {
         { to: "/admin", label: "Dashboard", icon: LayoutDashboard },
         { to: "/admin/users", label: "Users", icon: Users },
         { to: "/admin/reports", label: "Reports", icon: BarChart3 },
+<<<<<<< HEAD
         {
           to: "/admin/assign-manager",
           label: "Assign Manager",
           icon: Users,
         },
+=======
+        { to: "/admin/settings", label: "Settings", icon: Settings },
+>>>>>>> 0aa482e365723ad9899daba81968225e82f6e432
       ];
     case "Senior Manager":
       return [
         { to: "/manager", label: "Dashboard", icon: LayoutDashboard },
+<<<<<<< HEAD
         {
           to: "/manager/leave-approval",
           label: "Leave Approval",
@@ -54,6 +62,11 @@ const roleNav = (role) => {
           label: "Attendance Monitoring",
           icon: Clock,
         },
+=======
+        { to: "/manager/team", label: "Team", icon: Users },
+        { to: "/manager/planning", label: "Planning", icon: Calendar },
+        { to: "/manager/reports", label: "Reports", icon: BarChart3 },
+>>>>>>> 0aa482e365723ad9899daba81968225e82f6e432
       ];
     case "HR Recruiter":
       return [
@@ -64,6 +77,7 @@ const roleNav = (role) => {
       ];
     default:
       return [
+<<<<<<< HEAD
         { to: "/employee", label: "Profile", icon: UserCircle2 },
         {
           to: "/employee/leave-request",
@@ -76,6 +90,12 @@ const roleNav = (role) => {
           icon: ListChecks,
         },
         { to: "/employee/attendance", label: "Attendance", icon: Clock },
+=======
+        { to: "/employee", label: "Home", icon: LayoutDashboard },
+        { to: "/employee/payslips", label: "Payslips", icon: FileText },
+        { to: "/employee/leave", label: "Leave", icon: Calendar },
+        { to: "/employee/performance", label: "Performance", icon: BadgeCheck },
+>>>>>>> 0aa482e365723ad9899daba81968225e82f6e432
       ];
   }
 };
@@ -94,10 +114,14 @@ export default function Navbar({ sticky = true }) {
     } catch {}
   }, []);
 
+<<<<<<< HEAD
   const links = useMemo(
     () => roleNav(user?.role?.trim?.() || "Employee"),
     [user]
   );
+=======
+  const links = useMemo(() => roleNav(user?.role?.trim?.() || "Employee"), [user]);
+>>>>>>> 0aa482e365723ad9899daba81968225e82f6e432
 
   const handleLogout = () => {
     localStorage.removeItem("token");
@@ -105,6 +129,7 @@ export default function Navbar({ sticky = true }) {
     navigate("/");
   };
 
+<<<<<<< HEAD
   const isActive = (to) =>
     location.pathname === to || location.pathname.startsWith(to + "/");
 
@@ -126,6 +151,20 @@ export default function Navbar({ sticky = true }) {
           <span className="ml-2 px-2 py-0.5 text-xs rounded-full bg-indigo-100 text-indigo-700">
             AI HRMS
           </span>
+=======
+  const isActive = (to) => location.pathname === to || location.pathname.startsWith(to + "/");
+
+  return (
+    <header className={`${sticky ? "sticky top-0 z-50" : ""} ${glass}`}> 
+      <div className="relative mx-auto max-w-7xl px-4 py-3 flex items-center justify-between">
+        {/* Brand */}
+        <div className="flex items-center gap-2 cursor-pointer" onClick={() => navigate("/")}> 
+          <motion.div initial={{ rotate: -12, scale: 0.9 }} animate={{ rotate: 0, scale: 1 }}>
+            <Bot className="h-7 w-7 text-indigo-600" />
+          </motion.div>
+          <span className="font-semibold">AetherHR</span>
+          <span className="ml-2 px-2 py-0.5 text-xs rounded-full bg-indigo-100 text-indigo-700">AI HRMS</span>
+>>>>>>> 0aa482e365723ad9899daba81968225e82f6e432
         </div>
 
         {/* Desktop nav */}
@@ -168,11 +207,15 @@ export default function Navbar({ sticky = true }) {
             onClick={() => setMobileOpen((v) => !v)}
             aria-label="Toggle menu"
           >
+<<<<<<< HEAD
             {mobileOpen ? (
               <X className="h-5 w-5" />
             ) : (
               <Menu className="h-5 w-5" />
             )}
+=======
+            {mobileOpen ? <X className="h-5 w-5" /> : <Menu className="h-5 w-5" />}
+>>>>>>> 0aa482e365723ad9899daba81968225e82f6e432
           </button>
         </div>
       </div>
@@ -195,9 +238,13 @@ export default function Navbar({ sticky = true }) {
                     setMobileOpen(false);
                   }}
                   className={`relative px-3 py-2 rounded-xl text-sm transition flex items-center gap-2 hover:bg-white/70 ${
+<<<<<<< HEAD
                     isActive(to)
                       ? "text-indigo-700 bg-indigo-50"
                       : "text-gray-700"
+=======
+                    isActive(to) ? "text-indigo-700 bg-indigo-50" : "text-gray-700"
+>>>>>>> 0aa482e365723ad9899daba81968225e82f6e432
                   }`}
                 >
                   <Icon className="h-4 w-4" /> {label}

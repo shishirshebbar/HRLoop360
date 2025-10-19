@@ -69,6 +69,7 @@ export default function AdminDashboard() {
       setErr("");
       try {
         const [hrRes, mgrRes, empRes] = await Promise.all([
+<<<<<<< HEAD
           axios.get("http://localhost:5000/api/users?roles=HR%20Recruiter", {
             headers,
           }),
@@ -78,6 +79,11 @@ export default function AdminDashboard() {
           axios.get("http://localhost:5000/api/users?roles=Employee", {
             headers,
           }),
+=======
+          axios.get("http://localhost:5000/api/users?roles=HR%20Recruiter", { headers }),
+          axios.get("http://localhost:5000/api/users?roles=Senior%20Manager", { headers }),
+          axios.get("http://localhost:5000/api/users?roles=Employee", { headers }),
+>>>>>>> 0aa482e365723ad9899daba81968225e82f6e432
         ]);
         setHrs(hrRes.data || []);
         setManagers(mgrRes.data || []);
@@ -172,16 +178,24 @@ export default function AdminDashboard() {
           transition={{ duration: 0.4 }}
           className={`relative p-6 rounded-3xl ${glass}`}
         >
+<<<<<<< HEAD
           {/* <div className="absolute right-4 top-4"><CloseButton /></div> */}
+=======
+          <div className="absolute right-4 top-4"><CloseButton /></div>
+>>>>>>> 0aa482e365723ad9899daba81968225e82f6e432
           <div className="flex items-center gap-3">
             <div className="h-10 w-10 rounded-xl bg-indigo-600 text-white grid place-items-center">
               <UserPlus className="h-5 w-5" />
             </div>
             <div>
               <h2 className="text-lg font-semibold">Create new user</h2>
+<<<<<<< HEAD
               <p className="text-sm text-gray-600">
                 Invite by email and assign a role
               </p>
+=======
+              <p className="text-sm text-gray-600">Invite by email and assign a role</p>
+>>>>>>> 0aa482e365723ad9899daba81968225e82f6e432
             </div>
           </div>
 
@@ -224,9 +238,13 @@ export default function AdminDashboard() {
                   placeholder="••••••••"
                   className="w-full px-4 py-3 rounded-xl border focus:ring-2 focus:ring-indigo-400 focus:outline-none"
                   value={form.password}
+<<<<<<< HEAD
                   onChange={(e) =>
                     setForm({ ...form, password: e.target.value })
                   }
+=======
+                  onChange={(e) => setForm({ ...form, password: e.target.value })}
+>>>>>>> 0aa482e365723ad9899daba81968225e82f6e432
                   required
                 />
                 <Lock className="h-5 w-5 absolute right-3 top-3.5 text-gray-400" />
@@ -267,6 +285,7 @@ export default function AdminDashboard() {
                   }`}
                 >
                   {messageType === "success" ? (
+<<<<<<< HEAD
                     <span className="inline-flex items-center gap-2">
                       <CheckCircle2 className="h-4 w-4" /> {message}
                     </span>
@@ -274,6 +293,11 @@ export default function AdminDashboard() {
                     <span className="inline-flex items-center gap-2">
                       <AlertCircle className="h-4 w-4" /> {message}
                     </span>
+=======
+                    <span className="inline-flex items-center gap-2"><CheckCircle2 className="h-4 w-4" /> {message}</span>
+                  ) : (
+                    <span className="inline-flex items-center gap-2"><AlertCircle className="h-4 w-4" /> {message}</span>
+>>>>>>> 0aa482e365723ad9899daba81968225e82f6e432
                   )}
                 </motion.div>
               )}
@@ -285,6 +309,7 @@ export default function AdminDashboard() {
         <div className="lg:col-span-2 space-y-6">
           {/* Top metrics */}
           <div className="grid sm:grid-cols-2 lg:grid-cols-4 gap-4">
+<<<<<<< HEAD
             <MetricCard
               icon={<Users />}
               label="Total Employees"
@@ -300,6 +325,11 @@ export default function AdminDashboard() {
               label="Recruiters"
               value={hrs.length}
             />
+=======
+            <MetricCard icon={<Users />} label="Total Employees" value={employees.length + managers.length + hrs.length} />
+            <MetricCard icon={<Building2 />} label="Managers" value={managers.length} />
+            <MetricCard icon={<Briefcase />} label="Recruiters" value={hrs.length} />
+>>>>>>> 0aa482e365723ad9899daba81968225e82f6e432
             <MetricCard icon={<Crown />} label="Admins" value={0} />
           </div>
 
@@ -312,7 +342,15 @@ export default function AdminDashboard() {
           >
             <div className="flex flex-wrap items-center justify-between gap-3">
               <div className="flex items-center gap-2">
+<<<<<<< HEAD
                 {["HR Recruiter", "Senior Manager", "Employee"].map((t) => (
+=======
+                {[
+                  "HR Recruiter",
+                  "Senior Manager",
+                  "Employee",
+                ].map((t) => (
+>>>>>>> 0aa482e365723ad9899daba81968225e82f6e432
                   <button
                     key={t}
                     onClick={() => setActiveTab(t)}
@@ -342,6 +380,7 @@ export default function AdminDashboard() {
               <table className="min-w-full text-left">
                 <thead className="bg-white/60 border-b">
                   <tr>
+<<<<<<< HEAD
                     <th className="px-4 py-3 text-sm font-semibold text-gray-600">
                       Name
                     </th>
@@ -351,6 +390,11 @@ export default function AdminDashboard() {
                     <th className="px-4 py-3 text-sm font-semibold text-gray-600">
                       Role
                     </th>
+=======
+                    <th className="px-4 py-3 text-sm font-semibold text-gray-600">Name</th>
+                    <th className="px-4 py-3 text-sm font-semibold text-gray-600">Email</th>
+                    <th className="px-4 py-3 text-sm font-semibold text-gray-600">Role</th>
+>>>>>>> 0aa482e365723ad9899daba81968225e82f6e432
                   </tr>
                 </thead>
                 <tbody>
@@ -367,6 +411,7 @@ export default function AdminDashboard() {
                       </tr>
                     )}
 
+<<<<<<< HEAD
                     {!loading &&
                       filtered.map((u) => (
                         <motion.tr
@@ -398,6 +443,30 @@ export default function AdminDashboard() {
                           className="px-4 py-10 text-center text-gray-500"
                           colSpan={3}
                         >
+=======
+                    {!loading && filtered.map((u) => (
+                      <motion.tr
+                        key={u._id}
+                        layout
+                        initial={{ opacity: 0 }}
+                        animate={{ opacity: 1 }}
+                        exit={{ opacity: 0 }}
+                        className="border-t hover:bg-white/60"
+                      >
+                        <td className="px-4 py-3 font-medium">{u.name}</td>
+                        <td className="px-4 py-3 text-gray-700">{u.email}</td>
+                        <td className="px-4 py-3">
+                          <span className={`text-xs px-2 py-1 rounded-full border ${roleStyles[u.role] || "bg-gray-100 text-gray-700 border-gray-200"}`}>
+                            {u.role}
+                          </span>
+                        </td>
+                      </motion.tr>
+                    ))}
+
+                    {!loading && !filtered.length && (
+                      <tr>
+                        <td className="px-4 py-10 text-center text-gray-500" colSpan={3}>
+>>>>>>> 0aa482e365723ad9899daba81968225e82f6e432
                           No records found.
                         </td>
                       </tr>
@@ -437,9 +506,13 @@ function MetricCard({ icon, label, value }) {
       className={`p-4 rounded-2xl ${glass}`}
     >
       <div className="flex items-center justify-between">
+<<<<<<< HEAD
         <div className="p-2 rounded-xl bg-indigo-50 text-indigo-700">
           {icon}
         </div>
+=======
+        <div className="p-2 rounded-xl bg-indigo-50 text-indigo-700">{icon}</div>
+>>>>>>> 0aa482e365723ad9899daba81968225e82f6e432
       </div>
       <div className="mt-3">
         <div className="text-2xl font-extrabold">{value}</div>

@@ -31,6 +31,7 @@ router.get(
   }
 );
 
+<<<<<<< HEAD
 router.get("/profile", protect, async (req, res) => {
   try {
     const userId = req.user.id;
@@ -73,4 +74,6 @@ router.get(
   }
 );
 
+=======
+>>>>>>> 0aa482e365723ad9899daba81968225e82f6e432
 export default router;

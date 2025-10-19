@@ -22,6 +22,7 @@ router.post("/create-user", protect, adminOnly, async (req, res) => {
     res.status(500).json({ message: err.message });
   }
 });
+<<<<<<< HEAD
 router.get("/managers", protect, adminOnly, async (req, res) => {
   try {
     const managers = await User.find({ role: "Senior Manager" }).select(
@@ -84,5 +85,7 @@ router.patch(
     }
   }
 );
+=======
+>>>>>>> 0aa482e365723ad9899daba81968225e82f6e432
 
 export default router;
