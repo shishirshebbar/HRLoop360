@@ -4,6 +4,7 @@ import axios from "axios";
 import Navbar from "../components/Navbar";
 import { motion, AnimatePresence } from "framer-motion";
 import { Users, Search, AlertCircle, RefreshCw, Briefcase, Crown, UserCheck, BarChart3 } from "lucide-react";
+import GenieChatWidget from "../components/GenieChatWidget";
 
 const glass =
   "bg-white/70 backdrop-blur-xl border border-white/60 shadow-[0_8px_30px_rgba(0,0,0,0.06)]";
@@ -54,7 +55,7 @@ export default function HRDashboard() {
   return (
     <div className="min-h-screen bg-gradient-to-br from-indigo-50 via-white to-sky-50">
       <Navbar />
-
+      <GenieChatWidget />
       {/* Header */}
       <div className="mx-auto max-w-7xl px-4 pt-8 pb-4">
         <div className="flex items-center justify-between gap-4">
