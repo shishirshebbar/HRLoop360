@@ -3,6 +3,9 @@ import FeatureCard from "../components/FeatureCard";
 import axios from "axios";
 import Navbar from "../components/Navbar";
 import { motion, AnimatePresence } from "framer-motion";
+import { Link } from "react-router-dom";
+import { Fingerprint, Gauge, BadgeCheck, BrainCircuit, LayoutDashboard } from "lucide-react";
+
 import { Users, Search, AlertCircle, RefreshCw, Briefcase, Crown, UserCheck, BarChart3 } from "lucide-react";
 import GenieChatWidget from "../components/GenieChatWidget";
 
@@ -58,6 +61,191 @@ export default function HRDashboard() {
       <GenieChatWidget />
       {/* Header */}
       <div className="mx-auto max-w-7xl px-4 pt-8 pb-4">
+       {/* AI HR Lifecycle – Clickable Cycle FIRST */}
+<div className="mx-auto max-w-7xl px-4 pb-6">
+  <motion.div
+    initial={{ opacity: 0, scale: 0.96 }}
+    animate={{ opacity: 1, scale: 1 }}
+    transition={{ duration: 0.6 }}
+    className={`relative ${glass} rounded-3xl p-8 overflow-hidden`}
+  >
+    <h3 className="text-center text-xl font-bold text-indigo-700 mb-1">
+      360° AI-Powered HR–Employee Journey
+    </h3>
+    <p className="text-center text-s text-gray-600 mb-4">
+      <span className="font-medium text-indigo-700">Tip:</span> Click any module in the cycle to open its tool.
+    </p>
+
+    <div className="relative mx-auto h-[22rem] md:h-[24rem] w-full">
+      {/* soft conic ring */}
+      <div
+        className="absolute inset-6 rounded-full"
+        style={{
+          background:
+            "conic-gradient(from 0deg, rgba(99,102,241,.18), rgba(14,165,233,.18), rgba(16,185,129,.18), rgba(139,92,246,.18), rgba(217,70,239,.18), rgba(99,102,241,.18))",
+          boxShadow: "inset 0 0 40px rgba(0,0,0,.04)",
+        }}
+      />
+
+      {/* rotating arrow ring */}
+      <motion.svg
+        viewBox="0 0 200 200"
+        className="absolute inset-0 m-auto h-[80%] w-[80%]"
+        initial={{ rotate: -90 }}
+        animate={{ rotate: 270 }}
+        transition={{ repeat: Infinity, duration: 20, ease: "linear" }}
+      >
+        <defs>
+          <marker id="arrow" markerWidth="6" markerHeight="6" refX="5" refY="3" orient="auto">
+            <path d="M0,0 L6,3 L0,6 Z" fill="rgba(79,70,229,0.6)" />
+          </marker>
+        </defs>
+        <circle
+          cx="100" cy="100" r="85"
+          fill="none"
+          stroke="rgba(79,70,229,.35)"
+          strokeWidth="2"
+          markerEnd="url(#arrow)"
+        />
+      </motion.svg>
+
+      {/* center label */}
+      <div className="absolute inset-0 grid place-items-center text-center">
+        <div>
+          <div className="text-xs uppercase tracking-wider text-gray-500">Continuous</div>
+          <div className="text-lg font-bold">AI HR Loop</div>
+          <div className="text-xs text-gray-500">Insights → Actions → Outcomes</div>
+        </div>
+      </div>
+
+      {/* 1. AI Resume Screening */}
+<motion.div
+  className="absolute top-2 left-1/2 -translate-x-1/2"
+  whileHover={{ scale: 1.06, y: -2 }}
+  whileTap={{ scale: 0.98 }}
+>
+  <Link
+    to="/ai/resume-screener"
+    className="relative px-3 py-2 rounded-xl text-white shadow-xl ring-1 ring-white/30 border border-white/20 bg-indigo-600 text-xs flex items-center gap-2 hover:opacity-95 transition-all hover:ring-2 hover:ring-indigo-300 hover:ring-offset-2 hover:ring-offset-white"
+    aria-label="Open AI Resume Screening"
+    title="Open AI Resume Screening"
+  >
+    <span className="absolute -top-1 -right-1 h-2.5 w-2.5 rounded-full bg-white/90">
+      <span className="absolute inset-0 rounded-full bg-white/60 animate-ping" />
+    </span>
+    <span className="absolute -z-10 inset-0 rounded-xl blur-md opacity-0 hover:opacity-100 transition"
+          style={{ background: "radial-gradient(120px 60px at 50% 50%, rgba(99,102,241,.45), transparent)" }} />
+    <span className="inline-flex h-6 w-6 items-center justify-center rounded-md bg-white/20">
+      <Fingerprint className="h-4 w-4" />
+    </span>
+    <span className="whitespace-pre leading-tight">AI Resume{'\n'}Screening</span>
+  </Link>
+</motion.div>
+
+{/* 2. Skill Gaps Analyzer */}
+<motion.div
+  className="absolute left-2 top-1/2 -translate-y-1/2"
+  whileHover={{ scale: 1.06, x: 2 }}
+  whileTap={{ scale: 0.98 }}
+>
+  <Link
+    to="/ai/skills"
+    className="relative px-3 py-2 rounded-xl text-white shadow-xl ring-1 ring-white/30 border border-white/20 bg-sky-600 text-xs flex items-center gap-2 hover:opacity-95 transition-all hover:ring-2 hover:ring-sky-300 hover:ring-offset-2 hover:ring-offset-white"
+    aria-label="Open Skill Gaps Analyzer"
+    title="Open Skill Gaps Analyzer"
+  >
+    <span className="absolute -top-1 -right-1 h-2.5 w-2.5 rounded-full bg-white/90">
+      <span className="absolute inset-0 rounded-full bg-white/60 animate-ping" />
+    </span>
+    <span className="absolute -z-10 inset-0 rounded-xl blur-md opacity-0 hover:opacity-100 transition"
+          style={{ background: "radial-gradient(120px 60px at 50% 50%, rgba(14,165,233,.45), transparent)" }} />
+    <span className="inline-flex h-6 w-6 items-center justify-center rounded-md bg-white/20">
+      <Gauge className="h-4 w-4" />
+    </span>
+    <span className="whitespace-pre leading-tight">Skill Gaps{'\n'}Analyzer</span>
+  </Link>
+</motion.div>
+
+{/* 3. Offer Acceptance Optimizer */}
+<motion.div
+  className="absolute bottom-2 left-1/4 -translate-x-1/2"
+  whileHover={{ scale: 1.06, y: -2 }}
+  whileTap={{ scale: 0.98 }}
+>
+  <Link
+    to="/ai/offer"
+    className="relative px-3 py-2 rounded-xl text-white shadow-xl ring-1 ring-white/30 border border-white/20 bg-emerald-600 text-xs flex items-center gap-2 hover:opacity-95 transition-all hover:ring-2 hover:ring-emerald-300 hover:ring-offset-2 hover:ring-offset-white"
+    aria-label="Open Offer Acceptance Optimizer"
+    title="Open Offer Acceptance Optimizer"
+  >
+    <span className="absolute -top-1 -right-1 h-2.5 w-2.5 rounded-full bg-white/90">
+      <span className="absolute inset-0 rounded-full bg-white/60 animate-ping" />
+    </span>
+    <span className="absolute -z-10 inset-0 rounded-xl blur-md opacity-0 hover:opacity-100 transition"
+          style={{ background: "radial-gradient(120px 60px at 50% 50%, rgba(16,185,129,.45), transparent)" }} />
+    <span className="inline-flex h-6 w-6 items-center justify-center rounded-md bg-white/20">
+      <BadgeCheck className="h-4 w-4" />
+    </span>
+    <span className="whitespace-pre leading-tight">Offer{'\n'}Optimizer</span>
+  </Link>
+</motion.div>
+
+{/* 4. Performance Prediction */}
+<motion.div
+  className="absolute bottom-2 right-1/4 translate-x-1/2"
+  whileHover={{ scale: 1.06, y: -2 }}
+  whileTap={{ scale: 0.98 }}
+>
+  <Link
+    to="/ai/performance"
+    className="relative px-3 py-2 rounded-xl text-white shadow-xl ring-1 ring-white/30 border border-white/20 bg-violet-600 text-xs flex items-center gap-2 hover:opacity-95 transition-all hover:ring-2 hover:ring-violet-300 hover:ring-offset-2 hover:ring-offset-white"
+    aria-label="Open Performance Prediction"
+    title="Open Performance Prediction"
+  >
+    <span className="absolute -top-1 -right-1 h-2.5 w-2.5 rounded-full bg-white/90">
+      <span className="absolute inset-0 rounded-full bg-white/60 animate-ping" />
+    </span>
+    <span className="absolute -z-10 inset-0 rounded-xl blur-md opacity-0 hover:opacity-100 transition"
+          style={{ background: "radial-gradient(120px 60px at 50% 50%, rgba(139,92,246,.45), transparent)" }} />
+    <span className="inline-flex h-6 w-6 items-center justify-center rounded-md bg-white/20">
+      <BrainCircuit className="h-4 w-4" />
+    </span>
+    <span className="whitespace-pre leading-tight">Performance{'\n'}Prediction</span>
+  </Link>
+</motion.div>
+
+{/* 5. Satisfaction Prediction */}
+<motion.div
+  className="absolute right-2 top-1/2 -translate-y-1/2"
+  whileHover={{ scale: 1.06, x: -2 }}
+  whileTap={{ scale: 0.98 }}
+>
+  <Link
+    to="/ai/satisfaction"
+    className="relative px-3 py-2 rounded-xl text-white shadow-xl ring-1 ring-white/30 border border-white/20 bg-fuchsia-600 text-xs flex items-center gap-2 hover:opacity-95 transition-all hover:ring-2 hover:ring-fuchsia-300 hover:ring-offset-2 hover:ring-offset-white"
+    aria-label="Open Satisfaction Prediction"
+    title="Open Satisfaction Prediction"
+  >
+    <span className="absolute -top-1 -right-1 h-2.5 w-2.5 rounded-full bg-white/90">
+      <span className="absolute inset-0 rounded-full bg-white/60 animate-ping" />
+    </span>
+    <span className="absolute -z-10 inset-0 rounded-xl blur-md opacity-0 hover:opacity-100 transition"
+          style={{ background: "radial-gradient(120px 60px at 50% 50%, rgba(217,70,239,.45), transparent)" }} />
+    <span className="inline-flex h-6 w-6 items-center justify-center rounded-md bg-white/20">
+      <LayoutDashboard className="h-4 w-4" />
+    </span>
+    <span className="whitespace-pre leading-tight">Satisfaction{'\n'}Prediction</span>
+  </Link>
+</motion.div>
+    </div>
+
+    <p className="mt-6 text-xs text-gray-500 text-center">
+      Click a module to open it: Resume Screening → Skill Alignment → Offer Optimization → Performance → Satisfaction → back to Hiring Insights
+    </p>
+  </motion.div>
+</div>
+
+
         <div className="flex items-center justify-between gap-4">
           <div>
             <motion.h1
@@ -192,7 +380,7 @@ export default function HRDashboard() {
         </motion.div>
       </div>
 
-      {/* AI Features */}
+      {/* AI Features
       <section className="mx-auto max-w-7xl px-4 pb-20">
         <h2 className="text-xl md:text-2xl font-bold mb-4 flex items-center gap-2">
           <Briefcase className="h-5 w-5 text-indigo-600" /> AI Features
@@ -224,7 +412,7 @@ export default function HRDashboard() {
             to="/ai/resume-screener"
           />
         </div>
-      </section>
+      </section> */}
     </div>
   );
 }

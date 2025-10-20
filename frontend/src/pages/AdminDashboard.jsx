@@ -57,6 +57,7 @@ export default function AdminDashboard() {
 
   const [activeTab, setActiveTab] = useState("HR Recruiter");
   const [query, setQuery] = useState("");
+const [admins, setAdmins] = useState([]);
 
   const headers = useMemo(
     () => ({ Authorization: `Bearer ${localStorage.getItem("token")}` }),
@@ -68,7 +69,7 @@ export default function AdminDashboard() {
       setLoading(true);
       setErr("");
       try {
-        const [hrRes, mgrRes, empRes] = await Promise.all([
+        const [hrRes, mgrRes, empRes,admRes] = await Promise.all([
           axios.get("http://localhost:5000/api/users?roles=HR%20Recruiter", {
             headers,
           }),
@@ -78,10 +79,12 @@ export default function AdminDashboard() {
           axios.get("http://localhost:5000/api/users?roles=Employee", {
             headers,
           }),
+          axios.get("http://localhost:5000/api/users?roles=Management%20Admin", { headers }),
         ]);
         setHrs(hrRes.data || []);
         setManagers(mgrRes.data || []);
         setEmployees(empRes.data || []);
+        setAdmins(admRes.data || []);
       } catch (e) {
         setErr(e.response?.data?.message || "Failed to load users");
       } finally {
@@ -92,18 +95,16 @@ export default function AdminDashboard() {
     fetchAll();
   }, [headers]);
 
-  const datasetByTab = useMemo(() => {
-    switch (activeTab) {
-      case "HR Recruiter":
-        return hrs;
-      case "Senior Manager":
-        return managers;
-      case "Employee":
-        return employees;
-      default:
-        return [];
-    }
-  }, [activeTab, hrs, managers, employees]);
+const datasetByTab = useMemo(() => {
+  switch (activeTab) {
+    case "HR Recruiter": return hrs;
+    case "Senior Manager": return managers;
+    case "Employee": return employees;
+    case "Management Admin": return admins;
+    default: return [];
+  }
+}, [activeTab, hrs, managers, employees, admins]);
+
 
   const filtered = useMemo(() => {
     if (!query) return datasetByTab;
@@ -130,6 +131,7 @@ export default function AdminDashboard() {
       if (form.role === "HR Recruiter") setHrs((p) => [created, ...p]);
       if (form.role === "Senior Manager") setManagers((p) => [created, ...p]);
       if (form.role === "Employee") setEmployees((p) => [created, ...p]);
+      if (form.role === "Management Admin") setAdmins(p => [created, ...p]);
       setForm({ name: "", email: "", password: "", role: form.role });
     } catch (error) {
       setMessageType("error");
@@ -284,24 +286,17 @@ export default function AdminDashboard() {
         {/* Right column — Lists & Analytics */}
         <div className="lg:col-span-2 space-y-6">
           {/* Top metrics */}
-          <div className="grid sm:grid-cols-2 lg:grid-cols-4 gap-4">
-            <MetricCard
-              icon={<Users />}
-              label="Total Employees"
-              value={employees.length + managers.length + hrs.length}
-            />
-            <MetricCard
-              icon={<Building2 />}
-              label="Managers"
-              value={managers.length}
-            />
-            <MetricCard
-              icon={<Briefcase />}
-              label="Recruiters"
-              value={hrs.length}
-            />
-            <MetricCard icon={<Crown />} label="Admins" value={0} />
-          </div>
+         <div className="grid sm:grid-cols-2 lg:grid-cols-4 gap-4">
+  <MetricCard
+    icon={<Users />}
+    label="Total Users"
+    value={employees.length + managers.length + hrs.length + admins.length}
+  />
+  <MetricCard icon={<Building2 />} label="Managers" value={managers.length} />
+  <MetricCard icon={<Briefcase />} label="Recruiters" value={hrs.length} />
+  <MetricCard icon={<Crown />} label="Admins" value={admins.length} />
+</div>
+
 
           {/* Tabbed table */}
           <motion.div
@@ -312,19 +307,18 @@ export default function AdminDashboard() {
           >
             <div className="flex flex-wrap items-center justify-between gap-3">
               <div className="flex items-center gap-2">
-                {["HR Recruiter", "Senior Manager", "Employee"].map((t) => (
-                  <button
-                    key={t}
-                    onClick={() => setActiveTab(t)}
-                    className={`px-3 py-1.5 rounded-full border text-sm transition ${
-                      activeTab === t
-                        ? "bg-indigo-600 text-white border-indigo-600"
-                        : "bg-white/70 border-white/60"
-                    }`}
-                  >
-                    {t}
-                  </button>
-                ))}
+                {["HR Recruiter", "Senior Manager", "Employee", "Management Admin"].map((t) => (
+  <button
+    key={t}
+    onClick={() => setActiveTab(t)}
+    className={`px-3 py-1.5 rounded-full border text-sm transition ${
+      activeTab === t ? "bg-indigo-600 text-white border-indigo-600" : "bg-white/70 border-white/60"
+    }`}
+  >
+    {t}
+  </button>
+))}
+
               </div>
               <div className="relative">
                 <Search className="h-4 w-4 absolute left-3 top-3 text-gray-400" />

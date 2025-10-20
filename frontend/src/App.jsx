@@ -18,6 +18,11 @@ import AttendanceMonitoringPage from "./pages/manager/AttendanceMonitoringPage";
 import LeaveRequestPage from "./pages/employee/LeaveRequestPage";
 import TaskAllocatedPage from "./pages/employee/TaskAllocatedPage";
 import AttendancePage from "./pages/employee/AttendancePage";
+import AdminUsers from "./pages/AdminUsers";
+import AdminReports from "./pages/AdminReports";
+import HRCandidates from "./pages/HRCandidates";
+import HRJobs from "./pages/HRJobs";
+import HRSettings from "./pages/HRSettings";
 
 function App() {
   return (
@@ -41,6 +46,22 @@ function App() {
           element={
             <ProtectedRoute allowedRoles={["Management Admin"]}>
               <AdminAssignManager />
+            </ProtectedRoute>
+          }
+        />
+        <Route
+          path="/admin/users"
+          element={
+            <ProtectedRoute allowedRoles={["Management Admin"]}>
+              <AdminUsers />
+            </ProtectedRoute>
+          }
+        />
+         <Route
+          path="/admin/reports"
+          element={
+            <ProtectedRoute allowedRoles={["Management Admin"]}>
+              <AdminReports />
             </ProtectedRoute>
           }
         />
@@ -84,6 +105,31 @@ function App() {
             </ProtectedRoute>
           }
         />
+        <Route
+          path="/hr/candidates"
+          element={
+            <ProtectedRoute allowedRoles={["HR Recruiter"]}>
+              <HRCandidates />
+            </ProtectedRoute>
+          }
+        />
+        <Route
+          path="/hr/jobs"
+          element={
+            <ProtectedRoute allowedRoles={["HR Recruiter"]}>
+              <HRJobs />
+            </ProtectedRoute>
+          }
+        />
+        <Route
+          path="/hr/settings"
+          element={
+            <ProtectedRoute allowedRoles={["HR Recruiter"]}>
+              <HRSettings />
+            </ProtectedRoute>
+          }
+        />
+        
         <Route
           path="/employee"
           element={
