@@ -37,8 +37,6 @@ Each AI stage feeds into the next, forming a self-improving ecosystem:
 
 ### AI 
 - **GeminiAPI** 
--
-
 
 ---
 
@@ -64,19 +62,41 @@ Each AI stage feeds into the next, forming a self-improving ecosystem:
 - MongoDB  
 
 
-### Installation
+### Installation Steps
+### Clone the repo
 ```bash
-git clone https://github.com/shishirshebbar/AI-Powered-HRMS-Platform.git
-cd AI-Powered-HRMS-Platform
+git clone https://github.com/shishirshebbar/HRLoop360.git
+```
+### Navigate to project folder
+```bash
+cd HRLoop360
+```
+### Navigate to backend folder
+```bash
 cd backend
+```
+### Install backend dependencies
+```bash
 npm install
+```
+### Run Backend
+```bash
 npm run dev
+```
+### Navigate to frontend folder
+```bash
 cd frontend
+```
+### Install frontend dependencies
+```bash
 npm install 
+```
+### Run Frontend
+```bash
 npm run dev
 ```
 
-### Environment Configuration
+### Environment Configuration(place this .env file in backend folder)
 ```bash
 PORT=5000
 MONGO_URI=your_mongodb_connection_string_here
@@ -87,3 +107,4 @@ ENABLE_LLM_EXPLANATION=true
 GEMINI_EMBED_MODEL=text-embedding-004
 GEMINI_MODEL=gemini-2.0-flash
 AI_DEBUG=true
+```
