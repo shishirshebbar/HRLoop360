@@ -1,0 +1,850 @@
+openapi: 3.0.0
+info:
+  title: HRLoop360 API
+  version: 1.0.0
+  description: Documentation for HRLoop360 Backend API
+servers:
+  - url: http://localhost:5000
+    description: Local development server
+
+components:
+  securitySchemes:
+    bearerAuth:
+      type: http
+      scheme: bearer
+      bearerFormat: JWT
+
+  schemas:
+    User:
+      type: object
+      properties:
+        _id:
+          type: string
+          example: "64f0a1b2c3d4e5f678901234"
+        name:
+          type: string
+          example: "John Doe"
+        email:
+          type: string
+          example: "john.doe@example.com"
+        role:
+          type: string
+          enum: [Employee, "Senior Manager", "HR Recruiter", "Management Admin"]
+        manager:
+          type: string
+          nullable: true
+          example: "64f0a1b2c3d4e5f678901235"
+    Leave:
+      type: object
+      properties:
+        _id:
+          type: string
+          example: "64f1a1b2c3d4e5f678901236"
+        employee:
+          $ref: '#/components/schemas/User'
+        manager:
+          $ref: '#/components/schemas/User'
+        startDate:
+          type: string
+          format: date
+          example: "2025‑10‑20"
+        endDate:
+          type: string
+          format: date
+          example: "2025‑10‑22"
+        reason:
+          type: string
+          example: "Medical leave"
+        type:
+          type: string
+          example: "Sick"
+        status:
+          type: string
+          enum: [Pending, Approved, Rejected]
+    Task:
+      type: object
+      properties:
+        _id:
+          type: string
+          example: "64f2a1b2c3d4e5f678901237"
+        title:
+          type: string
+          example: "Complete monthly report"
+        description:
+          type: string
+          example: "Prepare and submit the monthly sales report"
+        assigner:
+          $ref: '#/components/schemas/User'
+        assignee:
+          $ref: '#/components/schemas/User'
+        dueDate:
+          type: string
+          format: date
+          example: "2025‑10‑31"
+        status:
+          type: string
+          example: "In Progress"
+    Attendance:
+      type: object
+      properties:
+        _id:
+          type: string
+          example: "64f3a1b2c3d4e5f678901238"
+        employee:
+          $ref: '#/components/schemas/User'
+        manager:
+          $ref: '#/components/schemas/User'
+        date:
+          type: string
+          format: date
+          example: "2025‑10‑20"
+        clockIn:
+          type: string
+          format: date‑time
+          example: "2025‑10‑20T09:15:00Z"
+        clockOut:
+          type: string
+          format: date‑time
+          nullable: true
+          example: "2025‑10‑20T18:05:00Z"
+        status:
+          type: string
+          example: "Present"
+
+security:
+  - bearerAuth: []
+
+tags:
+  - name: Auth
+    description: Authentication & registration
+  - name: Admin
+    description: Admin (Management Admin) operations
+  - name: HRMS
+    description: HR / Manager / Employee operations
+  - name: AI
+    description: AI‑powered operations
+
+paths:
+
+  # ---------- Auth Routes ----------
+  /api/auth/register:
+    post:
+      tags:
+        - Auth
+      summary: Register a new user (Employee only)
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required: [name, email, password, role]
+              properties:
+                name:
+                  type: string
+                email:
+                  type: string
+                password:
+                  type: string
+                role:
+                  type: string
+                  example: Employee
+      responses:
+        '201':
+          description: User registered successfully
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  user:
+                    $ref: '#/components/schemas/User'
+                  token:
+                    type: string
+        '400':
+          description: User already exists / invalid role
+        '500':
+          description: Server error
+
+  /api/auth/login:
+    post:
+      tags:
+        - Auth
+      summary: Login an existing user
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required: [email, password]
+              properties:
+                email:
+                  type: string
+                password:
+                  type: string
+      responses:
+        '200':
+          description: Login successful
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  token:
+                    type: string
+                  user:
+                    $ref: '#/components/schemas/User'
+        '400':
+          description: Invalid credentials
+        '500':
+          description: Server error
+
+  # ---------- Admin Routes ----------
+  /api/admin/create-user:
+    post:
+      tags:
+        - Admin
+      summary: Admin creates a new user
+      security:
+        - bearerAuth: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required: [name, email, password, role]
+              properties:
+                name:
+                  type: string
+                email:
+                  type: string
+                password:
+                  type: string
+                role:
+                  type: string
+                  enum: [Employee, "Senior Manager", "Management Admin"]
+      responses:
+        '201':
+          description: User created successfully
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  message:
+                    type: string
+                  newUser:
+                    $ref: '#/components/schemas/User'
+        '400':
+          description: Email already in use
+        '500':
+          description: Server error
+
+  /api/admin/managers:
+    get:
+      tags:
+        - Admin
+      summary: Get list of all Senior Managers
+      security:
+        - bearerAuth: []
+      responses:
+        '200':
+          description: List of managers
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  type: object
+                  properties:
+                    name:
+                      type: string
+                    email:
+                      type: string
+        '500':
+          description: Server error
+
+  /api/admin/assign-manager/{employeeId}:
+    patch:
+      tags:
+        - Admin
+      summary: Assign or unassign a manager to an employee
+      security:
+        - bearerAuth: []
+      parameters:
+        - name: employeeId
+          in: path
+          required: true
+          schema:
+            type: string
+          description: ID of the employee to assign
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                managerId:
+                  type: string
+                  nullable: true
+      responses:
+        '200':
+          description: Manager assigned successfully
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  message:
+                    type: string
+                  user:
+                    $ref: '#/components/schemas/User'
+        '400':
+          description: Invalid manager ID or role
+        '403':
+          description: Cannot assign manager to Admin or Manager
+        '404':
+          description: Employee not found
+        '500':
+          description: Server error
+
+  # ---------- HRMS Routes ----------
+  /api/hr/leave/request:
+    post:
+      tags:
+        - HRMS
+      summary: Employee submits a new leave request
+      security:
+        - bearerAuth: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required: [startDate, endDate, reason, type]
+              properties:
+                startDate:
+                  type: string
+                  format: date
+                endDate:
+                  type: string
+                  format: date
+                reason:
+                  type: string
+                type:
+                  type: string
+      responses:
+        '201':
+          description: Leave request created
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Leave'
+        '400':
+          description: Must have assigned manager or invalid request
+        '500':
+          description: Server error
+
+  /api/hr/leave/history:
+    get:
+      tags:
+        - HRMS
+      summary: Employee fetches their leave history
+      security:
+        - bearerAuth: []
+      responses:
+        '200':
+          description: List of leave history
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/Leave'
+        '500':
+          description: Server error
+
+  /api/hr/leave/approvals:
+    get:
+      tags:
+        - HRMS
+      summary: Manager fetches pending leave requests for team
+      security:
+        - bearerAuth: []
+      responses:
+        '200':
+          description: List of pending leave requests
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/Leave'
+        '500':
+          description: Server error
+
+  /api/hr/leave/approve/{leaveId}:
+    patch:
+      tags:
+        - HRMS
+      summary: Manager approves or rejects a leave request
+      security:
+        - bearerAuth: []
+      parameters:
+        - name: leaveId
+          in: path
+          required: true
+          schema:
+            type: string
+          description: ID of the leave request
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required: [status]
+              properties:
+                status:
+                  type: string
+                  enum: [Approved, Rejected]
+      responses:
+        '200':
+          description: Leave request updated
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Leave'
+        '404':
+          description: Leave request not found or already processed
+        '500':
+          description: Server error
+
+  /api/hr/task/assign:
+    post:
+      tags:
+        - HRMS
+      summary: Manager assigns a new task to an employee
+      security:
+        - bearerAuth: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required: [title, description, assigneeId, dueDate]
+              properties:
+                title:
+                  type: string
+                description:
+                  type: string
+                assigneeId:
+                  type: string
+                dueDate:
+                  type: string
+                  format: date
+      responses:
+        '201':
+          description: Task created
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Task'
+        '400':
+          description: Cannot assign task: User not found or not a direct report
+        '500':
+          description: Server error
+
+  /api/hr/task/allocated:
+    get:
+      tags:
+        - HRMS
+      summary: Employee fetches their allocated tasks
+      security:
+        - bearerAuth: []
+      responses:
+        '200':
+          description: List of tasks for employee
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/Task'
+        '500':
+          description: Server error
+
+  /api/hr/task/update/{taskId}:
+    patch:
+      tags:
+        - HRMS
+      summary: Employee updates status of their task
+      security:
+        - bearerAuth: []
+      parameters:
+        - name: taskId
+          in: path
+          required: true
+          schema:
+            type: string
+          description: ID of the task
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required: [status]
+              properties:
+                status:
+                  type: string
+                  example: "Completed"
+      responses:
+        '200':
+          description: Task updated
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Task'
+        '404':
+          description: Task not found or you are not the assignee
+        '500':
+          description: Server error
+
+  /api/hr/task/monitoring:
+    get:
+      tags:
+        - HRMS
+      summary: Manager monitors tasks of their direct reports
+      security:
+        - bearerAuth: []
+      responses:
+        '200':
+          description: List of tasks assigned by manager
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/Task'
+        '500':
+          description: Server error
+
+  /api/hr/attendance/clock-in:
+    post:
+      tags:
+        - HRMS
+      summary: Employee clocks in for today
+      security:
+        - bearerAuth: []
+      responses:
+        '201':
+          description: Clock‑in recorded
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Attendance'
+        '400':
+          description: Already clocked in today
+        '500':
+          description: Server error
+
+  /api/hr/attendance/clock-out:
+    patch:
+      tags:
+        - HRMS
+      summary: Employee clocks out for today
+      security:
+        - bearerAuth: []
+      responses:
+        '200':
+          description: Clock‑out recorded
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Attendance'
+        '400':
+          description: Clock‑in record not found or already clocked out
+        '500':
+          description: Server error
+
+  /api/hr/attendance/history:
+    get:
+      tags:
+        - HRMS
+      summary: Employee fetches last 30 days attendance history
+      security:
+        - bearerAuth: []
+      responses:
+        '200':
+          description: List of attendance records
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/Attendance'
+        '500':
+          description: Server error
+
+  /api/hr/attendance/monitoring:
+    get:
+      tags:
+        - HRMS
+      summary: Manager monitors today's attendance records for their team
+      security:
+        - bearerAuth: []
+      responses:
+        '200':
+          description: List of attendance records for today
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/Attendance'
+        '500':
+          description: Server error
+
+  # ---------- AI Routes ----------
+  /api/ai/performance:
+    post:
+      tags:
+        - AI
+      summary: Generate performance insights via AI
+      security:
+        - bearerAuth: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required:
+                - employeeId
+                - okrCompletion
+                - attendanceRate
+                - peerFeedbackCount
+                - peerFeedbackSentiment
+                - lastManagerRating
+                - tenureMonths
+                - roleComplexity
+              properties:
+                employeeId:
+                  type: string
+                okrCompletion:
+                  type: number
+                attendanceRate:
+                  type: number
+                peerFeedbackCount:
+                  type: integer
+                peerFeedbackSentiment:
+                  type: number
+                lastManagerRating:
+                  type: number
+                tenureMonths:
+                  type: integer
+                roleComplexity:
+                  type: number
+      responses:
+        '200':
+          description: Performance insights generated
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  ok:
+                    type: boolean
+                  data:
+                    type: object
+        '500':
+          description: Server error
+
+  /api/ai/offer:
+    post:
+      tags:
+        - AI
+      summary: Generate job offer insights via AI
+      security:
+        - bearerAuth: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required:
+                - candidateId
+                - offeredBaseSalary
+                - marketMedianSalary
+                - roleLevel
+                - experienceYears
+                - benefitsScore
+                - locationFlexibility
+                - offerSpeedDays
+                - companyReputationScore
+              properties:
+                candidateId:
+                  type: string
+                offeredBaseSalary:
+                  type: number
+                marketMedianSalary:
+                  type: number
+                roleLevel:
+                  type: number
+                experienceYears:
+                  type: number
+                benefitsScore:
+                  type: number
+                locationFlexibility:
+                  type: number
+                offerSpeedDays:
+                  type: number
+                companyReputationScore:
+                  type: number
+      responses:
+        '200':
+          description: Offer insights generated
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  ok:
+                    type: boolean
+                  data:
+                    type: object
+        '500':
+          description: Server error
+
+  /api/ai/skills:
+    post:
+      tags:
+        - AI
+      summary: Extract and match skills from profile and job
+      security:
+        - bearerAuth: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required:
+                - profileText
+                - jobText
+              properties:
+                profileText:
+                  type: string
+                jobText:
+                  type: string
+                topK:
+                  type: integer
+                  default: 8
+      responses:
+        '200':
+          description: Skills extracted and matched
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  ok:
+                    type: boolean
+                  data:
+                    type: object
+        '500':
+          description: Server error
+
+  /api/ai/satisfaction:
+    post:
+      tags:
+        - AI
+      summary: Analyze satisfaction survey data
+      security:
+        - bearerAuth: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required:
+                - teamId
+                - surveys
+              properties:
+                teamId:
+                  type: string
+                windowLabel:
+                  type: string
+                  default: last_4_weeks
+                surveys:
+                  type: array
+                  items:
+                    type: object
+      responses:
+        '200':
+          description: Satisfaction score generated
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  ok:
+                    type: boolean
+                  data:
+                    type: object
+        '400':
+          description: Invalid input
+        '500':
+          description: Server error
+
+  /api/ai/resume/screen:
+    post:
+      tags:
+        - AI
+      summary: Resume screening via AI
+      security:
+        - bearerAuth: []
+      requestBody:
+        required: true
+        content:
+          multipart/form-data:
+            schema:
+              type: object
+              required:
+                - jdText
+                - resumes
+              properties:
+                jdText:
+                  type: string
+                title:
+                  type: string
+                  default: Untitled Job
+                resumes:
+                  type: array
+                  items:
+                    type: string
+                    format: binary
+      responses:
+        '200':
+          description: Resumes screened successfully
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  ok:
+                    type: boolean
+                  data:
+                    type: object
+        '400':
+          description: Missing jdText or resumes
+        '500':
+          description: Server error
