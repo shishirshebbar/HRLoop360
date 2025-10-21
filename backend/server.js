@@ -22,7 +22,6 @@ app.use("/api/ai", aiRoutes);
 app.use("/api/users", userRoutes);
 app.use("/api/hr", hrmsRoutes);
 
-console.log(process.env.GEMINI_API_KEY);
 mongoose
   .connect(process.env.MONGO_URI)
   .then(() => console.log("✅ MongoDB Connected"))
