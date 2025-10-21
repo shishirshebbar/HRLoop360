@@ -2,8 +2,10 @@
 const multer= require("multer");
 const express = require("express");
 const router = express.Router();
+const { genieChat } = require("../controllers/genieChatController");
 const { performance, offer, skills, satisfaction, resumeScreen } = require("../controllers/aiController");
 const { protect } = require("../middleware/authMiddleware");
+
 
 // Exact role check for HR-only access
 function hrOnly(req, res, next) {
@@ -25,4 +27,5 @@ router.post("/skills", protect, hrOnly, jsonLarge, (req,res,next)=>{
 router.post("/skills",       protect, hrOnly, jsonLarge, skills);
 router.post("/satisfaction", protect, hrOnly, json, satisfaction);
 router.post("/resume/screen", protect, hrOnly, upload.array("resumes", 20), resumeScreen);
+router.post("/chat", jsonLarge, genieChat);
 module.exports = router;

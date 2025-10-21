@@ -222,7 +222,7 @@ export default function AISatisfaction() {
       items: { ...prev.items, workload: v },
     }))
   }
-  className="md:col-span-2"
+  className="md:col-span-4"
 />
 
 <Slider1to5
@@ -234,7 +234,7 @@ export default function AISatisfaction() {
       items: { ...prev.items, recognition: v },
     }))
   }
-  className="md:col-span-2"
+  className="md:col-span-4"
 />
 
 <Slider1to5
@@ -246,7 +246,7 @@ export default function AISatisfaction() {
       items: { ...prev.items, growth: v },
     }))
   }
-  className="md:col-span-2"
+  className="md:col-span-4"
 />
 
 <Slider1to5
@@ -489,36 +489,44 @@ function Textarea({ label, value, onChange, className = "" }) {
 
 
 function Slider1to5({ label, value, onChange, className = "" }) {
-  // Allow free-typing in the box; slider stays numeric inside [1..5].
+  // keep your numeric handling sane
   const numeric = typeof value === "string" ? parseFloat(value) : Number(value);
-  const sliderValue = Number.isFinite ? (Number.isFinite(numeric) ? numeric : 3) : (isFinite(numeric) ? numeric : 3);
+  const sliderValue = Number.isFinite(numeric) ? Math.min(5, Math.max(1, numeric)) : 3;
 
   return (
-    <label className={`text-sm ${className}`}>
-      <div className="flex flex-col gap-1 sm:flex-row sm:items-center sm:justify-between">
-        <span className="min-w-0 truncate">{label}</span>
+    <label className={`block text-sm text-gray-800 ${className}`}>
+      {/* Header row: stacks on mobile, 2 cols from sm+ */}
+      <div className="grid grid-cols-1 sm:grid-cols-[1fr_auto] items-center gap-2 mb-1 min-w-0">
+        {/* Let the label wrap; no truncate so it won't disappear or overlap */}
+        <span className="font-medium whitespace-normal break-words">
+          {label}
+        </span>
+
+        {/* Fixed-width number box that never shrinks; align to the right column */}
         <input
           type="text"
           inputMode="numeric"
-          className="sm:ml-2 w-full sm:w-20 rounded-lg border px-2 py-1 text-right focus:ring-2 focus:ring-indigo-400 focus:outline-none"
+          className="w-20 shrink-0 justify-self-end rounded-lg border px-2 py-1 text-right focus:ring-2 focus:ring-indigo-400 focus:outline-none"
           value={value ?? ""}
-          onChange={(e) => onChange(e.target.value)}  // keep text exactly as typed
-          placeholder="1-5"
+          onChange={(e) => onChange(e.target.value)}  // keep typed text
+          placeholder="1–5"
         />
       </div>
 
+      {/* Slider on its own row so it can't overlap the header */}
       <input
         type="range"
         min={1}
         max={5}
         step={1}
-        value={Math.min(5, Math.max(1, sliderValue || 3))}
-        onChange={(e) => onChange(Number(e.target.value))} // slider sends number
-        className="mt-2 w-full"
+        value={sliderValue}
+        onChange={(e) => onChange(Number(e.target.value))}
+        className="mt-2 block w-full"
       />
     </label>
   );
 }
+
 
 
 function Progress({ value = 0 }) {

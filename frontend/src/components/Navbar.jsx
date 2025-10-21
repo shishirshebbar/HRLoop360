@@ -122,7 +122,7 @@ export default function Navbar({ sticky = true }) {
           >
             <Bot className="h-7 w-7 text-indigo-600" />
           </motion.div>
-          <span className="font-semibold">AetherHR</span>
+          <span className="font-semibold">HRLoop360</span>
           <span className="ml-2 px-2 py-0.5 text-xs rounded-full bg-indigo-100 text-indigo-700">
             AI HRMS
           </span>

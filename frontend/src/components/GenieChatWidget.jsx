@@ -1,3 +1,4 @@
+// src/components/GenieChatWidget.jsx
 import React, { useState, useRef, useEffect } from "react";
 import {
   X,
@@ -9,7 +10,6 @@ import {
   Mic,
   Sparkles,
 } from "lucide-react";
-import { GoogleGenerativeAI } from "@google/generative-ai";
 import ReactMarkdown from "react-markdown";
 import remarkGfm from "remark-gfm";
 import rehypeHighlight from "rehype-highlight";
@@ -30,20 +30,26 @@ export default function GenieChatWidget({ onSend, onAttach, onToggle }) {
   ]);
   const [isTyping, setIsTyping] = useState(false);
   const [isListening, setIsListening] = useState(false);
+
   const messagesEndRef = useRef(null);
   const inputRef = useRef(null);
   const recognitionRef = useRef(null);
 
-  // ✅ Initialize Gemini
-  const ai = new GoogleGenerativeAI("AIzaSyA5hkF-WSQ-LZyy6xxx0o9UK0utuXW4Vw4");
+  // Where your backend lives (adjust if you proxy or deploy)
+  const API_BASE =
+    import.meta?.env?.VITE_API_BASE_URL?.replace(/\/+$/, "") || ""; // e.g. "", "http://localhost:5000"
 
-  // ✅ Scroll to bottom when messages change
-  const scrollToBottom = () => messagesEndRef.current?.scrollIntoView({ behavior: "smooth" });
-  useEffect(() => { scrollToBottom(); }, [messages]);
-
-  // ✅ Voice Recognition setup
+  // Scroll to bottom
+  const scrollToBottom = () =>
+    messagesEndRef.current?.scrollIntoView({ behavior: "smooth" });
   useEffect(() => {
-    const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
+    scrollToBottom();
+  }, [messages]);
+
+  // Voice Recognition setup
+  useEffect(() => {
+    const SpeechRecognition =
+      window.SpeechRecognition || window.webkitSpeechRecognition;
     if (!SpeechRecognition) {
       console.warn("Speech recognition not supported in this browser.");
       return;
@@ -71,44 +77,72 @@ export default function GenieChatWidget({ onSend, onAttach, onToggle }) {
     if (newState) setTimeout(() => inputRef.current?.focus(), 300);
   };
 
-  const handleMinimize = () => setIsMinimized(!isMinimized);
+  const handleMinimize = () => setIsMinimized((v) => !v);
 
-  // ✅ Send Message
+  // Send message via backend proxy
+  async function callGenie(userText) {
+  const API_BASE = import.meta.env.VITE_API_BASE_URL?.replace(/\/+$/, "") || "";
+  const res = await fetch(`${API_BASE}/api/ai/chat`, {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify({ message: userText }),
+  });
+
+  // Helpful logging during debug
+  if (!res.ok) {
+    const bodyText = await res.text().catch(() => "");
+    console.error("Genie HTTP error:", res.status, bodyText);
+    try {
+      const j = JSON.parse(bodyText);
+      throw new Error(j.error || `HTTP_${res.status}`);
+    } catch {
+      throw new Error(`HTTP_${res.status}`);
+    }
+  }
+
+  const data = await res.json();
+  return data.reply || "Sorry, I couldn’t generate a response.";
+}
+
+
   const handleSend = async () => {
-    if (!message.trim()) return;
+    const trimmed = message.trim();
+    if (!trimmed) return;
 
-    const newMessage = { id: Date.now().toString(), text: message, sender: "user", timestamp: new Date() };
+    const newMessage = {
+      id: Date.now().toString(),
+      text: trimmed,
+      sender: "user",
+      timestamp: new Date(),
+    };
     setMessages((prev) => [...prev, newMessage]);
-    onSend?.(message);
+    onSend?.(trimmed);
     setMessage("");
     setIsTyping(true);
 
-    setTimeout(async () => {
-      try {
-        const model = ai.getGenerativeModel({ model: "gemini-2.0-flash" });
-        const result = await model.generateContent(message);
-        const aiText = result.response.text() || "Sorry, I couldn’t generate a response.";
+    try {
+      const aiText = await callGenie(trimmed);
 
-        const genieResponse = {
-          id: (Date.now() + 1).toString(),
-          text: aiText,
-          sender: "genie",
-          timestamp: new Date(),
-        };
-        setMessages((prev) => [...prev, genieResponse]);
-      } catch (error) {
-        console.error("AI error:", error);
-        const errorResponse = {
-          id: (Date.now() + 2).toString(),
-          text: "⚠️ Oops! Something went wrong. Please try again.",
-          sender: "genie",
-          timestamp: new Date(),
-        };
-        setMessages((prev) => [...prev, errorResponse]);
-      } finally {
-        setIsTyping(false);
-      }
-    }, 1200);
+      const genieResponse = {
+        id: (Date.now() + 1).toString(),
+        text: aiText,
+        sender: "genie",
+        timestamp: new Date(),
+      };
+      setMessages((prev) => [...prev, genieResponse]);
+    } catch (error) {
+      console.error("Genie error:", error);
+      const errorResponse = {
+        id: (Date.now() + 2).toString(),
+        text:
+          "⚠️ Oops! Something went wrong talking to the AI. Please try again.",
+        sender: "genie",
+        timestamp: new Date(),
+      };
+      setMessages((prev) => [...prev, errorResponse]);
+    } finally {
+      setIsTyping(false);
+    }
   };
 
   const handleKeyPress = (e) => {
@@ -118,15 +152,18 @@ export default function GenieChatWidget({ onSend, onAttach, onToggle }) {
     }
   };
 
-  // ✅ Voice recording
   const handleMicClick = () => {
-    if (!recognitionRef.current) return alert("Speech recognition not supported in this browser.");
+    if (!recognitionRef.current)
+      return alert("Speech recognition not supported in this browser.");
     if (isListening) recognitionRef.current.stop();
     else recognitionRef.current.start();
   };
 
   const formatTime = (date) =>
-    date.toLocaleTimeString("en-US", { hour: "numeric", minute: "2-digit" });
+    new Date(date).toLocaleTimeString("en-US", {
+      hour: "numeric",
+      minute: "2-digit",
+    });
 
   return (
     <div className="fixed bottom-6 right-6 z-50">
@@ -164,7 +201,9 @@ export default function GenieChatWidget({ onSend, onAttach, onToggle }) {
                 <div className="absolute -bottom-0.5 -right-0.5 w-3 h-3 bg-green-400 rounded-full border-2 border-white" />
               </div>
               <div>
-                <h2 className="text-lg font-semibold text-gray-900 dark:text-white">Genie</h2>
+                <h2 className="text-lg font-semibold text-gray-900 dark:text-white">
+                  Genie
+                </h2>
                 <p className="text-xs text-green-500 font-medium">
                   {isListening ? "🎤 Listening..." : "Online"}
                 </p>
@@ -172,13 +211,26 @@ export default function GenieChatWidget({ onSend, onAttach, onToggle }) {
             </div>
 
             <div className="flex items-center gap-2">
-              <button onClick={() => setIsDark(!isDark)} className="p-2 rounded-lg hover:bg-gray-200 dark:hover:bg-gray-700">
-                {isDark ? <Sun className="w-4 h-4 text-gray-300" /> : <Moon className="w-4 h-4 text-gray-600" />}
+              <button
+                onClick={() => setIsDark((v) => !v)}
+                className="p-2 rounded-lg hover:bg-gray-200 dark:hover:bg-gray-700"
+              >
+                {isDark ? (
+                  <Sun className="w-4 h-4 text-gray-300" />
+                ) : (
+                  <Moon className="w-4 h-4 text-gray-600" />
+                )}
               </button>
-              <button onClick={handleMinimize} className="p-2 rounded-lg hover:bg-gray-200 dark:hover:bg-gray-700">
+              <button
+                onClick={handleMinimize}
+                className="p-2 rounded-lg hover:bg-gray-200 dark:hover:bg-gray-700"
+              >
                 <Minimize2 className="w-4 h-4 text-gray-600 dark:text-gray-300" />
               </button>
-              <button onClick={handleToggle} className="p-2 rounded-lg hover:bg-red-100 dark:hover:bg-red-900/30">
+              <button
+                onClick={handleToggle}
+                className="p-2 rounded-lg hover:bg-red-100 dark:hover:bg-red-900/30"
+              >
                 <X className="w-4 h-4 text-gray-600 dark:text-gray-300 hover:text-red-600" />
               </button>
             </div>
@@ -189,8 +241,17 @@ export default function GenieChatWidget({ onSend, onAttach, onToggle }) {
             <>
               <div className="flex-1 overflow-y-auto px-5 py-4 space-y-4 bg-gray-50/50 dark:bg-gray-800/50">
                 {messages.map((msg) => (
-                  <div key={msg.id} className={`flex ${msg.sender === "user" ? "justify-end" : "justify-start"}`}>
-                    <div className={`flex gap-2 max-w-[80%] ${msg.sender === "user" ? "flex-row-reverse" : "flex-row"}`}>
+                  <div
+                    key={msg.id}
+                    className={`flex ${
+                      msg.sender === "user" ? "justify-end" : "justify-start"
+                    }`}
+                  >
+                    <div
+                      className={`flex gap-2 max-w-[80%] ${
+                        msg.sender === "user" ? "flex-row-reverse" : "flex-row"
+                      }`}
+                    >
                       {msg.sender === "genie" && (
                         <div className="w-8 h-8 rounded-full bg-gradient-to-br from-[#6C5CE7] to-[#00B894] flex items-center justify-center shadow-md">
                           <Sparkles className="w-4 h-4 text-white" />
@@ -205,14 +266,23 @@ export default function GenieChatWidget({ onSend, onAttach, onToggle }) {
                           }`}
                         >
                           {msg.sender === "genie" ? (
-                            <ReactMarkdown remarkPlugins={[remarkGfm]} rehypePlugins={[rehypeHighlight]}>
+                            <ReactMarkdown
+                              remarkPlugins={[remarkGfm]}
+                              rehypePlugins={[rehypeHighlight]}
+                            >
                               {msg.text}
                             </ReactMarkdown>
                           ) : (
-                            <p className="text-sm leading-relaxed">{msg.text}</p>
+                            <p className="text-sm leading-relaxed">
+                              {msg.text}
+                            </p>
                           )}
                         </div>
-                        <p className={`text-xs text-gray-500 mt-1 px-1 ${msg.sender === "user" ? "text-right" : "text-left"}`}>
+                        <p
+                          className={`text-xs text-gray-500 mt-1 px-1 ${
+                            msg.sender === "user" ? "text-right" : "text-left"
+                          }`}
+                        >
                           {formatTime(msg.timestamp)}
                         </p>
                       </div>
@@ -249,17 +319,26 @@ export default function GenieChatWidget({ onSend, onAttach, onToggle }) {
                       type="text"
                       value={message}
                       onChange={(e) => setMessage(e.target.value)}
-                      onKeyPress={handleKeyPress}
+                      onKeyDown={handleKeyPress}
                       placeholder="Ask Genie or say something..."
                       className="w-full px-4 py-3 pr-20 rounded-xl bg-gray-100 dark:bg-gray-800 border text-sm text-gray-900 dark:text-gray-100"
                     />
                     <div className="absolute right-2 top-1/2 -translate-y-1/2 flex items-center gap-1">
-                      <button onClick={() => onAttach?.()} className="p-2 rounded-lg hover:bg-gray-200 dark:hover:bg-gray-700">
+                      <button
+                        onClick={() => onAttach?.()}
+                        className="p-2 rounded-lg hover:bg-gray-200 dark:hover:bg-gray-700"
+                        title="Attach"
+                      >
                         <Paperclip className="w-4 h-4 text-gray-500" />
                       </button>
                       <button
                         onClick={handleMicClick}
-                        className={`p-2 rounded-lg ${isListening ? "bg-red-200 dark:bg-red-800" : "hover:bg-gray-200 dark:hover:bg-gray-700"}`}
+                        className={`p-2 rounded-lg ${
+                          isListening
+                            ? "bg-red-200 dark:bg-red-800"
+                            : "hover:bg-gray-200 dark:hover:bg-gray-700"
+                        }`}
+                        title={isListening ? "Stop" : "Speak"}
                       >
                         <Mic className="w-4 h-4 text-gray-500" />
                       </button>
